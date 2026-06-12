@@ -96,3 +96,7 @@ jupyter notebook component2/sickle_cell_eda.ipynb
 ## Acknowledgements
 
 Dataset by Florence Tushabe, Samuel Mwesige et al., Soroti University, Uganda. Motivated by the ICMR National Sickle Cell Anaemia Mission (2023).
+
+---
+
+> *Stay curious. Build relentlessly.*
