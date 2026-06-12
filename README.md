@@ -1,33 +1,14 @@
 # SickleShield 🛡️
 
-*Screen first. Travel smart.*
+A machine learning triage system for Sickle Cell Disease in rural India.
 
----
+In tribal regions of Chhattisgarh, Madhya Pradesh, and Odisha, Sickle Cell Disease is common but hard to catch early. The nearest lab is often hours away, and many families make that trip only to get a negative result. SickleShield is a first-pass filter: it estimates risk before anyone travels, so testing reaches the people who actually need it.
 
-Imagine living in a village in rural Chhattisgarh.
-
-The nearest diagnostic lab is a four-hour journey away. You've been feeling tired, with recurring joint pain. It could be Sickle Cell Disease, common in your community, or it could be nothing.
-
-To find out, you'd lose a day of work, pay for travel, and possibly return with a negative result.
-
-**SickleShield checks if that trip is even worth taking.**
-
----
-
-## What is triage?
-
-Triage is a first filter that sorts who needs urgent care and who doesn't. Instead of sending everyone to a hospital, SickleShield first checks if you are actually at risk, so only those who need testing make the journey.
-
----
+> **Triage** means sorting who needs care first. Here, it means flagging likely cases before a long, costly trip to a diagnostic centre.
 
 ## The Problem
 
-- Sickle Cell Disease heavily affects tribal communities in Chhattisgarh, Madhya Pradesh, Odisha, and Gujarat.
-- Diagnosis requires a blood test available only in city labs.
-- Families travel hours, often for a negative result.
-- ICMR's National Sickle Cell Mission (2023) trained 21,000 workers, but rural screening is still scarce.
-
----
+Sickle Cell Disease heavily affects tribal communities in Chhattisgarh, Madhya Pradesh, Odisha, and Gujarat. Diagnosis needs a blood test available only in city labs, so families travel hours, often for nothing. ICMR's National Sickle Cell Mission (2023) trained 21,000 workers, but rural screening is still scarce.
 
 ## How It Works
 
@@ -47,34 +28,24 @@ Refer to hospital  /  All clear
 
 No costly equipment. Just a phone and a basic PHC microscope.
 
----
+## Component 1: Symptom Risk Scorer · `In Progress`
 
-## Component 1: Symptom Risk Scorer
-`In Progress`
-
-Self-reported inputs, no equipment needed.
-
-**Inputs:** age, gender, community, family history, pain episodes, jaundice, fatigue, frequent infections
+Self-reported inputs, no equipment needed: age, gender, community, family history, pain episodes, jaundice, fatigue, frequent infections.
 
 **Model:** XGBoost
 
-No public Sickle Cell symptom dataset exists yet, so this is trained on an **anaemia dataset as a proxy** to prove the pipeline works. The two conditions share clinical features like fatigue and jaundice. A data request is in with ICMR to retrain on real screening data.
+No public Sickle Cell symptom dataset exists yet, so this trains on an anaemia dataset as a proxy to prove the pipeline works (the two conditions share features like fatigue and jaundice). A data request is in with ICMR to retrain on real screening data.
 
----
+## Component 2: Blood Smear Classifier · `Complete`
 
-## Component 2: Blood Smear Classifier
-`Complete`
+A health worker uploads a slide photo and the model detects sickle-shaped cells instantly.
 
-Health worker uploads a slide photo. Model detects sickle-shaped cells instantly.
-
-**Model:** ResNet18, transfer learning
-
-**Approach:**
-- Trained final layer, then unfroze `layer4` with differential learning rates
-- Handled 5.74:1 class imbalance with weighted loss
+**Model:** ResNet18 with transfer learning
+- Trained the final layer, then unfroze `layer4` with differential learning rates
+- Handled the 5.74:1 class imbalance with weighted loss
 - Augmentation: flips, rotation, colour jitter
 
-**Results:**
+**Results**
 
 | Metric | Value |
 |---|---|
@@ -88,11 +59,9 @@ Health worker uploads a slide photo. Model detects sickle-shaped cells instantly
 
 ![Confusion Matrix](assets/confusion_matrix_seaborn.png)
 
-**Limitations:**
-- Normal recall (86%) limited by only 147 normal images
-- Dataset is from Uganda, not India (cell shape generalises, to be validated)
-
----
+**Limitations**
+- Normal recall (86%) is limited by only 147 normal images
+- Dataset is from Uganda, not India (cell shape generalises, but this needs validation)
 
 ## Roadmap
 
@@ -105,15 +74,11 @@ Health worker uploads a slide photo. Model detects sickle-shaped cells instantly
 | Retrain on ICMR data | Planned |
 | Multi-disease triage (TB, anaemia) | Future |
 
----
-
 ## Dataset
 
-**Component 2:** Florence Tushabe et al., Sickle Cell Microscopy Dataset (Uganda), 991 images (844 positive, 147 negative), 80/20 split.
+**Component 2:** Florence Tushabe et al., Sickle Cell Microscopy Dataset (Uganda). 991 images (844 positive, 147 negative), 80/20 split.
 
 **Component 1:** Anaemia proxy dataset, to be replaced with ICMR data.
-
----
 
 ## Setup
 
@@ -128,9 +93,6 @@ kaggle datasets download -d florencetushabe/sickle-cell-disease-dataset \
 jupyter notebook component2/sickle_cell_eda.ipynb
 ```
 
----
-
 ## Acknowledgements
 
-Dataset by Florence Tushabe, Samuel Mwesige et al., Soroti University, Uganda.
-Motivated by the ICMR National Sickle Cell Anaemia Mission (2023).
+Dataset by Florence Tushabe, Samuel Mwesige et al., Soroti University, Uganda. Motivated by the ICMR National Sickle Cell Anaemia Mission (2023).
